@@ -1,0 +1,138 @@
+	// signup activity
+		//code
+//create interface
+
+  @FormUrlEncoded
+    @POST("post_api_data.php")
+    Call<SignupModel>register(
+
+            @Field("name")String name,
+            @Field("email")String email,
+            @Field("password")String password,
+            @Field("phone")String phone,
+            @Field("address")String address
+
+    );
+
+
+// mainactivity signup
+
+
+public class SignUpActivity extends AppCompatActivity {
+    Button register,nextregister;
+    EditText nameregister1,emailregister1,passwordregister1,addressregister1,phoneregister1;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sign_up);
+        nextregister = findViewById(R.id.nextregister);
+        register = findViewById(R.id.register);
+        nameregister1 = findViewById(R.id.nameregister1);
+        emailregister1 = findViewById(R.id.emailregister1);
+        passwordregister1 = findViewById(R.id.passwordregister1);
+        addressregister1 = findViewById(R.id.addressregister1);
+        phoneregister1 = findViewById(R.id.phoneregister1);
+
+        nextregister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+
+        register.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+//
+                data();
+
+
+
+            }
+        });
+
+    }
+
+    private void data() {
+
+        String name = nameregister1.getText().toString();
+        String email = emailregister1.getText().toString();
+        String password = passwordregister1.getText().toString();
+        String address = addressregister1.getText().toString();
+        String phone = phoneregister1.getText().toString();
+
+        if (name.isEmpty()){
+            nameregister1.setError("Enter name here");
+            nameregister1.requestFocus();
+            return;
+        }
+        if (email.isEmpty()){
+            emailregister1.setError("Enter email here");
+            emailregister1.requestFocus();
+            return;
+        }
+        if (password.isEmpty()){
+            passwordregister1.setError("Enter password here");
+            passwordregister1.requestFocus();
+            return;
+        }
+        if (address.isEmpty()){
+            addressregister1.setError("Enter address here");
+            addressregister1.requestFocus();
+            return;
+        }
+        if (phone.isEmpty()){
+            phoneregister1.setError("Enter phone here");
+            phoneregister1.requestFocus();
+        }
+        else {
+                workregister(name,email,password,address,phone);
+
+        }
+
+    }
+
+    private void workregister(String name, String email, String password, String address, String phone) {
+
+        Call<SignupModel> call = SignControler.getInstance()
+                .api2().register(name,email,password,address,phone);
+
+                call.enqueue(new Callback<SignupModel>() {
+                    @Override
+                    public void onResponse(Call<SignupModel> call, Response<SignupModel> response) {
+
+                        if (response.isSuccessful()){
+
+                            SignupModel sign = response.body();
+                            sign.getMsg();
+                            Toast.makeText(SignUpActivity.this, "succesfully register", Toast.LENGTH_SHORT).show();
+                            nameregister1.setText("");
+                            emailregister1.setText("");
+                            passwordregister1.setText("");
+                            addressregister1.setText("");
+                            phoneregister1.setText("");
+
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<SignupModel> call, Throwable t) {
+                        Toast.makeText(SignUpActivity.this, "register Failed", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+    }
+}
